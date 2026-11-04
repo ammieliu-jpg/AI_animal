@@ -4,3 +4,9 @@ __pycache__/
 output/
 *.onnx
 *.pt
+*.mp4
+*.mov
+*.avi
+*_zones.json
+*_snapshot.jpg
+snapshot.jpg
