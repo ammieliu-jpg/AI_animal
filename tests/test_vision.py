@@ -153,4 +153,50 @@ def test_pipeline_on_synthetic_clip(tmp_path):
     found = {e.behavior for e in result.events}
     assert {Behavior.DRINKING, Behavior.EATING, Behavior.LITTER, Behavior.RESTING} <= found
     out = write_outputs(result, tmp_path / "out")
-    assert out["events"].read_text(encoding="utf-8").startswith("pet_id,behavior")
+    assert out["events"].read_text(encoding="utf-8-sig").startswith("pet_id,behavior")
+
+
+# --- multiple pets -------------------------------------------------------
+
+def test_tracker_keeps_ids_for_two_pets():
+    from pet_vision.tracker import SimpleTracker
+    tr = SimpleTracker()
+    for i in range(5):
+        a = Detection(BBox(10 + i * 5, 10, 60 + i * 5, 50), 0.9, "cat")
+        b = Detection(BBox(300 - i * 5, 10, 350 - i * 5, 50), 0.9, "cat")
+        out = tr.update([b, a] if i % 2 else [a, b])  # detection order must not matter
+        ids = {d.bbox.x1 < 150: tid for tid, d in out}
+    assert ids == {True: 1, False: 2}
+
+
+def test_bowl_chosen_by_activity_when_box_covers_several():
+    blue = Zone("blue", "food", [(200, 100), (240, 100), (240, 130), (200, 130)])
+    clf = BehaviorClassifier([WATER, blue])
+    big = det(0, 0, 400, 300)  # close-up: the pet's box covers both bowls
+    st = clf.classify(0, [big], {"water": 0.5, "blue": 9.0})
+    assert (st.behavior, st.zone) == (Behavior.EATING, "blue")
+    st = clf.classify(0.2, [big], {"water": 7.0, "blue": 0.3})
+    assert (st.behavior, st.zone) == (Behavior.DRINKING, "water")
+
+
+def test_analyze_frames_separates_two_pets():
+    from pet_vision.pipeline import analyze_frames
+
+    class TwoCats:
+        """Cat A sits at the water bowl; cat B walks across the room."""
+        def __init__(self):
+            self.i = 0
+
+        def detect(self, frame):
+            self.i += 1
+            x = 300 + self.i * 6
+            return [Detection(BBox(90, 80, 160, 140), 0.9, "cat"),
+                    Detection(BBox(x, 300, x + 70, 350), 0.9, "cat")]
+
+    fps = 5
+    frames = ((i / fps, np.zeros((480, 640, 3), np.uint8)) for i in range(50))
+    result = analyze_frames(frames, [WATER], TwoCats(), fps)
+    assert result.pet_ids == ["cat_1", "cat_2"]
+    assert {e.behavior for e in result.events_for("cat_1")} == {Behavior.DRINKING}
+    assert {e.behavior for e in result.events_for("cat_2")} == {Behavior.ACTIVE}
+    assert set(result.summary) == {"cat_1", "cat_2"}

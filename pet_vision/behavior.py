@@ -29,6 +29,7 @@ class BehaviorConfig:
     zone_max_speed: float = 0.25      # moving faster than this in a zone = just passing (same as active_speed)
     bowl_min_coverage: float = 0.5    # fraction of a bowl zone covered by the pet's bbox
     speed_window_s: float = 1.0       # time window for the speed estimate
+    min_zone_activity: float = 2.0    # mean grey-level change needed to pick a bowl by motion
 
 
 class BehaviorClassifier:
@@ -58,11 +59,18 @@ class BehaviorClassifier:
         dy = max(abs(b.y1 - b0.y1), abs(b.y2 - b0.y2))
         return (dx ** 2 + dy ** 2) ** 0.5 / max(b.diag, 1.0) / dt
 
-    def _zone_hit(self, det: Detection) -> tuple[Zone | None, float]:
-        """Return the zone the pet is using and a 0..1 strength of that match."""
-        best: tuple[Zone | None, float] = (None, 0.0)
+    def _zone_hit(
+        self, det: Detection, zone_activity: dict[str, float] | None = None
+    ) -> tuple[Zone | None, float]:
+        """Return the zone the pet is using and a 0..1 strength of that match.
+
+        When the pet's box covers several bowls (close-up camera, big pet), the bowl
+        with the most pixel change is chosen: a pet eating or drinking keeps moving its
+        head in that bowl, while untouched bowls stay still.
+        """
         nose = det.keypoints.get("nose")
         cx, cy = det.bbox.center
+        candidates: list[tuple[Zone, float]] = []
         for z in self.zones:
             if nose is not None:
                 strength = 1.0 if z.contains(*nose) else 0.0
@@ -73,22 +81,36 @@ class BehaviorClassifier:
                 # Bowls are small: the pet's body must cover most of the bowl.
                 cov = z.coverage_by(det.bbox)
                 strength = cov if cov >= self.cfg.bowl_min_coverage else 0.0
-            if strength > best[1]:
-                best = (z, strength)
-        return best
+            if strength > 0:
+                candidates.append((z, strength))
+        if not candidates:
+            return None, 0.0
+        if len(candidates) > 1 and nose is None and zone_activity:
+            active = [(zone_activity.get(z.name, 0.0), s, z) for z, s in candidates]
+            act, s, z = max(active, key=lambda a: (a[0], a[1]))
+            if act >= self.cfg.min_zone_activity:
+                return z, s
+        return max(candidates, key=lambda c: c[1])
 
-    def classify(self, t: float, detections: list[Detection]) -> FrameState:
+    def classify(
+        self, t: float, detections: list[Detection], zone_activity: dict[str, float] | None = None
+    ) -> FrameState:
+        """Label one pet in one frame.
+
+        ``detections`` should hold this pet's detection (first item is used);
+        ``zone_activity`` is the mean pixel change per zone name (see pipeline).
+        """
         if not detections:
             self.reset()
             return FrameState(t=t, behavior=Behavior.ABSENT, confidence=0.9)
 
-        det = detections[0]  # single-pet prototype: highest-scoring detection
+        det = detections[0]
         speed = self._speed(t, det)
 
         if det.stationary_hold:
             return FrameState(t, Behavior.RESTING, 0.6, det)
 
-        zone, strength = self._zone_hit(det)
+        zone, strength = self._zone_hit(det, zone_activity)
         if zone is not None and speed <= self.cfg.zone_max_speed:
             return FrameState(t, zone.behavior, round(det.score * strength, 3), det, zone.name)
 

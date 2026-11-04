@@ -31,17 +31,20 @@ def cmd_run(args) -> None:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     result = process_video(
-        args.video, zones, _detector(args), sample_fps=args.fps, pet_id=args.pet_id,
+        args.video, zones, _detector(args), sample_fps=args.fps,
         annotate_path=None if args.no_annotate else out / "annotated.mp4",
     )
     paths = write_outputs(result, out)
-    print(f"{len(result.events)} events -> {paths['events']}")
-    for e in result.events:
-        print(f"  {e.start_s:7.1f}s – {e.end_s:7.1f}s  {e.behavior.label_zh:<4} ({e.behavior.value}, "
-              f"{e.duration_s:.1f}s, conf {e.confidence:.2f})")
-    if args.ground_truth:
+    print(f"{len(result.pet_ids)} pet(s), {len(result.events)} events -> {paths['events']}")
+    for pet_id in result.pet_ids:
+        print(f"[{pet_id}]")
+        for e in result.events_for(pet_id):
+            where = f" @{e.zone}" if e.zone else ""
+            print(f"  {e.start_s:7.1f}s - {e.end_s:7.1f}s  {e.behavior.label_zh:<4} ({e.behavior.value}{where}, "
+                  f"{e.duration_s:.1f}s, conf {e.confidence:.2f})")
+    if args.ground_truth and result.primary_pet:
         from .evaluate import evaluate, load_segments
-        report = evaluate(result.events, load_segments(args.ground_truth))
+        report = evaluate(result.events_for(result.primary_pet), load_segments(args.ground_truth))
         (out / "evaluation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
         print("evaluation:", json.dumps(report))
 
@@ -86,7 +89,6 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--model", help="ONNX model path for --detector onnx")
     r.add_argument("--conf", type=float, default=0.35)
     r.add_argument("--fps", type=float, default=5.0, help="processing frame rate")
-    r.add_argument("--pet-id", default="pet1")
     r.add_argument("--no-annotate", action="store_true")
     r.add_argument("--ground-truth", help="ground_truth.csv to score against")
     r.set_defaults(func=cmd_run)

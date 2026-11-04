@@ -55,7 +55,7 @@ def _segments(states: list[FrameState], labels: list[Behavior]) -> list[_Seg]:
             seg = _Seg(b, i, i + 1)
             segs.append(seg)
         seg.conf_sum += s.confidence if s.behavior == b else 0.5
-        if s.zone:
+        if s.zone and s.behavior == b:
             seg.zones[s.zone] += 1
     return segs
 
