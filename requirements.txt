@@ -1,0 +1,6 @@
+numpy>=1.26
+opencv-python-headless>=4.9
+# Only needed for --detector onnx
+onnxruntime>=1.17
+# Tests
+pytest>=8
