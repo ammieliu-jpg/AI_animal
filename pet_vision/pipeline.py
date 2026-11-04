@@ -42,20 +42,23 @@ class VideoResult:
 
 def _draw(frame: np.ndarray, zones: list[Zone], st: FrameState, current: Behavior) -> np.ndarray:
     out = frame.copy()
+    # Scale lines and text with resolution so labels stay readable on 1080p / 4K video.
+    k = max(1.0, out.shape[1] / 640)
+    lw, font = max(2, int(2 * k)), cv2.FONT_HERSHEY_SIMPLEX
     for z in zones:
         c = ZONE_COLORS.get(z.kind, (200, 200, 200))
-        cv2.polylines(out, [z.as_int_array()], True, c, 2)
+        cv2.polylines(out, [z.as_int_array()], True, c, lw)
         zb = z.bounds
-        cv2.putText(out, z.kind, (int(zb.x1), int(zb.y1) - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.45, c, 1)
+        cv2.putText(out, z.kind, (int(zb.x1), int(zb.y1 - 4 * k)), font, 0.45 * k, c, max(1, int(k)))
     if st.detection is not None:
         b = st.detection.bbox
         c = COLORS[st.behavior]
-        cv2.rectangle(out, (int(b.x1), int(b.y1)), (int(b.x2), int(b.y2)), c, 2)
+        cv2.rectangle(out, (int(b.x1), int(b.y1)), (int(b.x2), int(b.y2)), c, lw)
         tag = f"{st.detection.label} {st.behavior.value} {st.confidence:.2f}"
-        cv2.putText(out, tag, (int(b.x1), max(14, int(b.y1) - 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, c, 2)
+        cv2.putText(out, tag, (int(b.x1), max(int(14 * k), int(b.y1 - 6 * k))), font, 0.5 * k, c, lw)
     banner = f"t={st.t:6.1f}s  event: {current.value.upper()}"
-    cv2.rectangle(out, (0, 0), (out.shape[1], 26), (30, 30, 30), -1)
-    cv2.putText(out, banner, (8, 18), cv2.FONT_HERSHEY_SIMPLEX, 0.55, COLORS[current], 2)
+    cv2.rectangle(out, (0, 0), (out.shape[1], int(26 * k)), (30, 30, 30), -1)
+    cv2.putText(out, banner, (int(8 * k), int(18 * k)), font, 0.55 * k, COLORS[current], lw)
     return out
 
 
