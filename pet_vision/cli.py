@@ -33,9 +33,11 @@ def cmd_run(args) -> None:
     result = process_video(
         args.video, zones, _detector(args), sample_fps=args.fps,
         annotate_path=None if args.no_annotate else out / "annotated.mp4",
+        overview_path=out / "overview.jpg",
     )
     paths = write_outputs(result, out)
     print(f"{len(result.pet_ids)} pet(s), {len(result.events)} events -> {paths['events']}")
+    print(f"overview image -> {out / 'overview.jpg'}")
     for pet_id in result.pet_ids:
         print(f"[{pet_id}]")
         for e in result.events_for(pet_id):

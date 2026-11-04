@@ -58,7 +58,8 @@ python -m pet_vision run output/synthetic/synthetic.mp4 --zones output/synthetic
 | `events.csv` | 行為事件：`pet_id, behavior, behavior_zh, start_s, end_s, duration_s, zone, confidence`（UTF-8 BOM，Excel 可直接開） |
 | `summary.json` | 每隻寵物各行為的次數、總時長、平均時長，作為模組 ② 的每日輸入 |
 | `frames.csv` | 逐格判斷與偵測框（除錯用） |
-| `annotated.mp4` | 疊上區域、偵測框與行為標籤的影片，可直接放進 Demo |
+| `annotated.mp4` | 疊上區域、偵測框與行為標籤的影片（寬度縮到 1280），可直接放進 Demo |
+| `overview.jpg` | 從影片平均挑 6 個畫面拼成的一張總覽圖，方便快速檢查或分享結果 |
 
 ### 偵測器
 

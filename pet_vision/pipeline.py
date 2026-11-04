@@ -212,29 +212,65 @@ def process_video(
     sample_fps: float = 5.0,
     behavior_config: BehaviorConfig | None = None,
     annotate_path: str | Path | None = None,
+    overview_path: str | Path | None = None,
+    annotate_max_width: int = 1280,
 ) -> VideoResult:
+    """Analyse a video. Optionally write an annotated video (downscaled to
+    ``annotate_max_width``) and an ``overview`` image: 6 annotated frames in a grid,
+    handy for a quick look or for sharing results."""
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise FileNotFoundError(f"cannot open video: {video_path}")
     src_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     step = max(1, int(round(src_fps / sample_fps)))
     eff_fps = src_fps / step
 
-    kept: list[np.ndarray] | None = [] if annotate_path is not None else None
-    result = analyze_frames(_iter_video(cap, step, src_fps, kept), zones, detector, eff_fps,
-                            behavior_config, keep_frame_states=annotate_path is not None)
+    draw = annotate_path is not None or overview_path is not None
+    result = analyze_frames(_iter_video(cap, step, src_fps, None), zones, detector, eff_fps,
+                            behavior_config, keep_frame_states=draw)
     cap.release()
 
-    if annotate_path is not None and kept:
-        writer = cv2.VideoWriter(str(annotate_path), cv2.VideoWriter_fourcc(*"mp4v"), eff_fps, (w, h))
-        for i, frame in enumerate(kept):
-            writer.write(_draw(frame, zones, i / eff_fps, result.frame_states[i], result.events, result.pet_ids))
-        writer.release()
+    if draw and result.frame_states:
+        _render(video_path, step, eff_fps, zones, result, annotate_path, overview_path, annotate_max_width)
 
     result.events = [e for e in result.events if e.behavior != Behavior.ABSENT]
     return result
+
+
+def _render(video_path, step, eff_fps, zones, result: VideoResult, annotate_path, overview_path,
+            max_width: int) -> None:
+    """Second pass over the video: draw results (keeps memory flat even for 4K input)."""
+    n = len(result.frame_states)
+    picks = {int(round(i * (n - 1) / 5)) for i in range(6)} if overview_path is not None else set()
+    tiles: dict[int, np.ndarray] = {}
+    writer = None
+    cap = cv2.VideoCapture(str(video_path))
+    for i, (t, frame) in enumerate(_iter_video(cap, step, eff_fps * step, None)):
+        if i >= n:
+            break
+        if annotate_path is None and i not in picks:
+            continue
+        img = _draw(frame, zones, t, result.frame_states[i], result.events, result.pet_ids)
+        h, w = img.shape[:2]
+        if w > max_width:
+            img = cv2.resize(img, (max_width, int(h * max_width / w)), interpolation=cv2.INTER_AREA)
+        if annotate_path is not None:
+            if writer is None:
+                writer = cv2.VideoWriter(str(annotate_path), cv2.VideoWriter_fourcc(*"mp4v"),
+                                         eff_fps, (img.shape[1], img.shape[0]))
+            writer.write(img)
+        if i in picks:
+            tw = 640
+            tiles[i] = cv2.resize(img, (tw, int(img.shape[0] * tw / img.shape[1])), interpolation=cv2.INTER_AREA)
+    cap.release()
+    if writer is not None:
+        writer.release()
+    if overview_path is not None and tiles:
+        ordered = [tiles[k] for k in sorted(tiles)]
+        while len(ordered) < 6:
+            ordered.append(np.zeros_like(ordered[0]))
+        grid = np.vstack([np.hstack(ordered[r * 2:r * 2 + 2]) for r in range(3)])
+        cv2.imwrite(str(overview_path), grid, [cv2.IMWRITE_JPEG_QUALITY, 85])
 
 
 def write_outputs(result: VideoResult, out_dir: str | Path) -> dict[str, Path]:
