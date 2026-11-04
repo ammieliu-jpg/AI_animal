@@ -7,7 +7,7 @@
 |---|---|
 | ① 視覺模組：影片轉成行為時間軸 | ✅ 原型完成（`pet_vision/`） |
 | ② 異常偵測：個體化基線、偏離提醒 | ✅ 原型完成（`pet_anomaly/`） |
-| ③ LLM 白話摘要（含護欄與免責聲明） | 待開發 |
+| ③ 白話提醒＋就醫觀察紀錄（LLM，含用語護欄與免責聲明） | ✅ 原型完成（`pet_notify/`） |
 | ④ 儀表板 | 待開發 |
 
 ---
@@ -175,3 +175,50 @@ python -m pet_anomaly evaluate output/sim/daily.csv --episodes output/sim/episod
 - 目前只有模擬資料。真實資料需要每天錄影，並經過模組 ① 轉成每日統計
 - 「留意」約佔 1 成天數，對每天推播來說偏多。實際產品可以設定成只在「建議諮詢」時推播，「留意」只顯示在 App 裡
 - 寵物編號要能跨天對應同一隻（見模組 ① 已知限制），每隻的基線才有意義
+
+---
+
+## ③ 白話提醒模組 `pet_notify`
+
+把模組 ② 的數字變成飼主在手機上看得懂的提醒，並產生可以帶去給獸醫看的「就醫觀察紀錄」。
+
+```
+alerts.json ─▶ 事實整理（只用模組 ② 算好的數字）─▶ Claude 撰寫 或 系統範本 ─▶ 用語檢查 ─▶ 加上免責聲明 ─▶ 提醒／預覽頁
+```
+
+### 用法
+
+```bash
+python -m pet_notify daily output/anomaly/alerts.json --daily output/sim/daily.csv --date 2026-10-19 --out output/notify --simulated
+```
+
+```bash
+python -m pet_notify vet-report output/sim/daily.csv --pet cat_2 --date 2026-10-14 --out output/notify/vet_report.html --simulated
+```
+
+- `daily` 會產生 `notifications.json` 和手機樣式的 `preview.html`（可以直接截圖放進 Demo）
+- `vet-report` 會產生一頁可列印的 HTML，內容有行為統計表、提醒紀錄和趨勢圖
+- 範例：[`docs/images/notify_preview.png`](docs/images/notify_preview.png)、[`docs/images/vet_report_cat_2.png`](docs/images/vet_report_cat_2.png)
+
+### 兩種撰寫方式
+
+| | 系統範本（預設） | Claude 撰寫（加 `--llm`） |
+|---|---|---|
+| 需要什麼 | 不需要任何東西 | Anthropic API 金鑰（`ANTHROPIC_API_KEY`），依用量計費 |
+| 文字 | 固定句型，穩定 | 更自然，能把多項變化串成一句話 |
+| 規則檢查 | 有（測試保證每一天都通過） | 有。不通過就請模型重寫一次，再不通過就改用範本 |
+
+使用的模型是 `claude-opus-5-5`，effort 設為 `low`（短文案用 low 就夠），並以結構化輸出取得 `title`、`body`、`next_step` 三個欄位。另外開啟了 server-side fallback（`fallbacks: "default"`）：模型的安全機制婉拒時，API 會自動改用建議的備用模型重試。如果仍然被婉拒，或連線失敗，就改用範本，**提醒一定會送出**。
+
+### 用語護欄（注意事項第 33–35 點）
+
+- **提醒等級由模組 ② 決定**，模型不能自行提高或降低；模型只負責措辭
+- 模型只會拿到模組 ② 算好的數字，並被要求不能自己編數字
+- **禁用詞檢查**（`pet_notify/rules.py`）：診斷類詞語、器官與病名、治療或用藥、保證性說法（例如「不用擔心」「不用看醫生」）、換飼料、品牌名稱。寧可誤擋，也不放過
+- 每則提醒的同一張卡片上，都附上第 35 點規定的免責聲明全文，不是放在頁尾或連結裡
+- 等級最高的提醒固定引導「近期聯絡獸醫，並帶上就醫觀察紀錄」，不會勸飼主延後就醫
+
+### 已知限制
+
+- 這個雲端開發環境沒有 API 金鑰，**Claude 撰寫路徑只用模擬的 client 測試過**（確認了請求格式、重試和備援流程）。真正的文字品質需要有金鑰時實際跑一次再檢查
+- 禁用詞清單是人工整理的，可能有漏網之魚；正式上線前建議請獸醫師審閱措辭

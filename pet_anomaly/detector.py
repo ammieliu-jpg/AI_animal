@@ -128,7 +128,7 @@ class Escalation:
         return best
 
     def update(self, z_today: dict[str, float]) -> tuple[str, dict[str, int]]:
-        self.history = (self.history + [z_today])[-3:]
+        self.history = (self.history + [z_today])[-60:]  # long enough to count streaks
         runs = {k: self._run(k) for k in z_today}
         sustained = {k: self._sustained(k) for k in z_today}
         strong = [k for k, v in sustained.items() if v >= self.cfg.sustained_z]

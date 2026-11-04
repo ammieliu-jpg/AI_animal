@@ -33,8 +33,11 @@ def write_alerts(assessments: list[DayAssessment], path: str | Path, only_latest
 
 def plot_pet(rows: list[dict], assessments: list[DayAssessment], pet_id: str, path: str | Path,
              episodes: list[dict] | None = None, simulated: bool = False) -> Path:
+    import logging
+
     import matplotlib
     matplotlib.use("Agg")
+    logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)  # quiet missing-font fallbacks
     import matplotlib.dates as mdates
     import matplotlib.pyplot as plt
 
