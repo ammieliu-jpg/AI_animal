@@ -10,3 +10,4 @@ output/
 *_zones.json
 *_snapshot.jpg
 snapshot.jpg
+!docs/demo_video/*.mp4

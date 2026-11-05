@@ -32,7 +32,7 @@ def write_alerts(assessments: list[DayAssessment], path: str | Path, only_latest
 
 
 def plot_pet(rows: list[dict], assessments: list[DayAssessment], pet_id: str, path: str | Path,
-             episodes: list[dict] | None = None, simulated: bool = False) -> Path:
+             episodes: list[dict] | None = None, simulated: bool = False, dpi: int = 130) -> Path:
     import logging
 
     import matplotlib
@@ -92,6 +92,6 @@ def plot_pet(rows: list[dict], assessments: list[DayAssessment], pet_id: str, pa
     fig.tight_layout(rect=(0, 0.04, 1, 0.97))
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=130)
+    fig.savefig(path, dpi=dpi)
     plt.close(fig)
     return path
