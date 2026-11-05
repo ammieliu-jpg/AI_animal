@@ -12,7 +12,8 @@ from pptx.util import Inches, Pt
 
 W = sys.argv[1]  # deck work dir
 IMG = W + "/img/"
-RED, DARK, GRAY, PINK, LIGHT, WHITE = "E2001A", "2D2D2D", "5B5C5F", "FFF1F3", "F7F7F7", "FFFFFF"
+RED, DARK, GRAY, PINK, LIGHT, WHITE = "E2001A", "2D2D2D", "5B5C5F", "ECEFF2", "F6F7F8", "FFFFFF"
+HEAD, MUTED = "3A3F45", "8A9096"  # table header, number circles
 GREEN, AMBER, ORANGE = "3F9D6B", "D9A521", "E07A2E"
 FONT = "Noto Sans TC"
 
@@ -81,7 +82,7 @@ def box(slide, x, y, w, h, fill=LIGHT, shape=MSO_SHAPE.RECTANGLE, line=None, nam
     return s
 
 
-def circle_num(slide, x, y, d, label, fill=RED, size=12):
+def circle_num(slide, x, y, d, label, fill=HEAD, size=12):
     c = box(slide, x, y, d, d, fill, MSO_SHAPE.OVAL)
     tf = c.text_frame
     for side in ("left", "right", "top", "bottom"):
@@ -95,7 +96,7 @@ def circle_num(slide, x, y, d, label, fill=RED, size=12):
     return c
 
 
-def card(slide, x, y, w, h, title, lines, fill=LIGHT, title_color=RED, size=12, bullet=True, title_size=14):
+def card(slide, x, y, w, h, title, lines, fill=LIGHT, title_color=DARK, size=12, bullet=True, title_size=14):
     box(slide, x, y, w, h, fill)
     text(slide, x + 0.15, y + 0.1, w - 0.3, 0.35, [title], size=title_size, color=title_color, bold=True)
     text(slide, x + 0.15, y + 0.48, w - 0.3, h - 0.55, lines, size=size, bullet=bullet, space_after=3)
@@ -114,7 +115,7 @@ def picture(slide, path, x, y, w=None, h=None, border=True):
     return pic
 
 
-def table(slide, x, y, w, rows, col_w, header_fill=RED, size=11, row_h=0.32, first_col_bold=True):
+def table(slide, x, y, w, rows, col_w, header_fill=HEAD, size=11, row_h=0.32, first_col_bold=True):
     shp = slide.shapes.add_table(len(rows), len(rows[0]), Inches(x), Inches(y), Inches(w), Inches(row_h * len(rows)))
     tbl = shp.table
     tblPr = tbl._tbl.tblPr
@@ -166,6 +167,10 @@ def frame(slide, num, title, key, key_w=None):
     for r in (r for p in pill_t.text_frame.paragraphs for r in p.runs):
         r.font.size = Pt(12)
     width = key_w or min(9.0, 0.45 + 0.175 * len(key))
+    pill.fill.solid()
+    pill.fill.fore_color.rgb = rgb(LIGHT)
+    for r in (r for p in pill_t.text_frame.paragraphs for r in p.runs):
+        r.font.color.rgb = rgb(DARK)
     pill.width = Inches(width)
     pill_t.width = Inches(width - 0.25)
 
@@ -187,7 +192,7 @@ set_run_text(cov[60], "上班時也能察覺貓犬「跟平常不一樣」的 AI
 s = S[1]
 frame(s, "01", "提案摘要", "從「有動靜才通知」，進化到「跟平常不一樣才提醒」")
 card(s, 0.5, 1.75, 4.4, 1.9, "作品與問題", [
-    [("投稿主題｜", {"bold": True}), ("預防保健", {})],
+    [("投稿主題｜", {"bold": True}), ("預防保健：日常健康管理、行為觀察、年齡階段照護", {})],
     [("目標對象｜", {"bold": True}), ("白天上班、家中有室內貓犬的飼主", {})],
     [("核心問題｜", {"bold": True}), ("白天 8–12 小時無人照看，喝水、進食、如廁的早期變化，常要好幾天後才被察覺", {})],
 ])
@@ -206,17 +211,20 @@ for i, (big, small) in enumerate([("3 層 AI", "看懂行為 → 和自己比 �
 # ---------------------------------------------------------------- 02 問題定義
 s = S[2]
 frame(s, "02", "問題定義與目標對象", "飼主不在家的 12 小時，是日常照護的空窗")
-text(s, 0.5, 1.7, 4.3, 0.3, ["使用情境：一位上班族飼主的一天"], size=14, color=RED, bold=True)
+text(s, 0.5, 1.7, 4.3, 0.3, ["使用情境：一位上班族飼主的一天"], size=14, color=DARK, bold=True)
 box(s, 0.6, 2.55, 4.1, 0.1, "D9D9D9")
-box(s, 1.25, 2.55, 2.8, 0.1, RED)
+box(s, 1.25, 2.55, 2.8, 0.1, HEAD)
 for x, w, t, d, al in [(0.5, 1.3, "08:00", "出門上班", "l"), (1.85, 1.5, "白天", "12 小時無人觀察", "c"),
                        (3.4, 1.3, "20:00", "回家只看到當下", "r")]:
     text(s, x, 2.05, w, 0.45, [t], size=13, bold=True, color=DARK, align=al)
     text(s, x, 2.75, w, 0.5, [d], size=11, color=GRAY, align=al)
 text(s, 0.5, 3.35, 4.3, 1.4, [
-    [("為什麼重要｜", {"bold": True, "color": RED}),
+    [("為什麼重要｜", {"bold": True}),
      ("貓天性會隱藏不適，喝水、進食、如廁頻率的改變，是獸醫常用的日常觀察項目，但白天正是最容易錯過的時段。", {})],
-], size=12)
+    [("規模｜", {"bold": True}),
+     ("台灣家貓約 174 萬隻、家犬約 146 萬隻，家貓首度超越家犬，養 2 隻以上貓的家庭也在增加。", {})],
+], size=11, space_after=5)
+caption(s, 0.5, 4.6, 4.3, "資料來源：農業部 114 年全國家犬家貓飼養數量調查（2026 年 4 月發布）", size=8.5)
 for i, (t, d) in enumerate([
         ("看不到", "上班時沒人在家，行為變化只能靠運氣發現"),
         ("看不懂", "一般寵物攝影機靠移動或聲音觸發，通知太多，最後被關掉"),
@@ -231,12 +239,12 @@ for i, (t, d) in enumerate([
 s = S[3]
 frame(s, "02", "目標對象與需求", "需要的不是更多影片，而是「什麼時候該注意」")
 personas = [("上班族單寵飼主", "白天長時間不在家", "想知道牠今天過得好不好，又不想一直看監視畫面"),
-            ("多貓／多犬家庭", "誰吃了、誰喝了分不清", "需要每隻分開記錄，才知道是哪一隻不一樣"),
+            ("多貓／多犬家庭", "家貓 174 萬隻，多貓家庭增加", "需要每隻分開記錄，才知道是哪一隻不一樣"),
             ("高齡貓犬照顧者", "本來就比較少動、喝比較多", "一般標準常誤判，需要依牠自己的狀態來比較")]
 for i, (t, sub, need) in enumerate(personas):
     x = 0.5 + i * 3.05
     box(s, x, 1.75, 2.85, 2.0, PINK if i == 1 else LIGHT)
-    text(s, x + 0.15, 1.85, 2.6, 0.35, [t], size=14, bold=True, color=RED)
+    text(s, x + 0.15, 1.85, 2.6, 0.35, [t], size=14, bold=True, color=DARK)
     text(s, x + 0.15, 2.22, 2.6, 0.35, [sub], size=11, color=GRAY)
     text(s, x + 0.15, 2.65, 2.6, 1.0, [need], size=12)
 text(s, 0.5, 3.95, 9.0, 0.3, ["共同需求 → 對應功能"], size=13, bold=True)
@@ -259,7 +267,7 @@ for i, (t, d) in enumerate(steps):
     text(s, x + 0.05, 2.45, 1.52, 0.35, [t], size=13, bold=True, align="c")
     text(s, x + 0.05, 2.8, 1.52, 0.75, d.split("\n"), size=10.5, color=GRAY, align="c", space_after=0)
     if i < 4:
-        text(s, x + 1.6, 2.45, 0.26, 0.35, ["›"], size=20, color=RED, bold=True, align="c")
+        text(s, x + 1.6, 2.45, 0.26, 0.35, ["›"], size=20, color=MUTED, bold=True, align="c")
 text(s, 0.5, 3.75, 9.0, 0.3, ["提醒長這樣（實際產生的範例，模擬資料）"], size=12, bold=True)
 text(s, 0.5, 4.08, 9.0, 0.7, [
     [("🟠 小黑喝水總時間連續 9 天偏多　", {"bold": True, "color": ORANGE}),
@@ -277,10 +285,10 @@ for i, (t, d) in enumerate(feats):
     x = 0.5 + (i % 2) * 2.5
     y = 1.75 + (i // 2) * 1.5
     box(s, x, y, 2.35, 1.35, LIGHT)
-    text(s, x + 0.12, y + 0.1, 2.15, 0.35, [t], size=13, bold=True, color=RED)
+    text(s, x + 0.12, y + 0.1, 2.15, 0.35, [t], size=13, bold=True, color=DARK)
     text(s, x + 0.12, y + 0.48, 2.15, 0.85, [d], size=11)
 box(s, 5.65, 1.75, 3.85, 2.85, PINK)
-text(s, 5.8, 1.85, 3.6, 0.35, ["設計原則"], size=14, bold=True, color=RED)
+text(s, 5.8, 1.85, 3.6, 0.35, ["設計原則"], size=14, bold=True, color=DARK)
 text(s, 5.8, 2.25, 3.6, 2.3, [
     [("非接觸、最小干擾｜", {"bold": True}), ("不需穿戴裝置，只分析碗與砂盆等必要區域（注意事項第 36 點）", {})],
     [("隱私｜", {"bold": True}), ("影像可在家中電腦處理，只保留行為統計", {})],
@@ -301,15 +309,15 @@ table(s, 0.5, 1.72, 9.0, [
 ], [1.05, 1.95, 1.2, 3.0, 1.8], size=10, row_h=0.6)
 box(s, 0.5, 4.27, 9.0, 0.5, PINK)
 text(s, 0.65, 4.3, 8.7, 0.45, [
-    [("AI 對作品價值的貢獻｜", {"bold": True, "color": RED}),
-     ("把幾小時的影片變成「今天哪裡不一樣」，並依每隻寵物的個性判斷，避免一般標準造成的誤報與漏報。", {})]],
+    [("AI 對作品價值的貢獻｜", {"bold": True, "color": DARK}),
+     ("把幾小時的影片變成「今天哪裡不一樣」，並依每隻寵物自己的平常判斷，抓到一般標準會漏掉的變化。", {})]],
     size=11, anchor="m")
 
 # ---------------------------------------------------------------- 04-① 看懂行為
 s = S[7]
 frame(s, "04", "AI ① 看懂行為", "實測：兩隻貓、四個碗的真實影片，系統分開追蹤每一隻")
 picture(s, IMG + "vision_cats.jpg", 0.5, 1.7, h=3.05)
-text(s, 4.35, 1.7, 5.15, 0.3, ["怎麼做"], size=14, bold=True, color=RED)
+text(s, 4.35, 1.7, 5.15, 0.3, ["怎麼做"], size=14, bold=True, color=DARK)
 text(s, 4.35, 2.05, 5.15, 1.5, [
     "YOLO 找出畫面中的貓狗，追蹤器替每隻編號（cat_1、cat_2）",
     "在畫面上框出水碗、食碗、砂盆；寵物停在區域內且沒在走動 → 喝水／進食／如廁",
@@ -323,9 +331,9 @@ text(s, 4.35, 3.87, 5.15, 0.9, [
 
 # ---------------------------------------------------------------- 04-② 個體化基線
 s = S[8]
-frame(s, "04", "AI ② 和自己的平常比", "高齡貓本來就喝比較多：用「牠自己的平常」才不會誤判")
+frame(s, "04", "AI ② 和自己的平常比", "每隻寵物的平常都不同：用「牠自己的平常」才看得出變化")
 picture(s, IMG + "trend_full.png", 0.5, 1.7, h=2.8)
-text(s, 4.05, 1.7, 5.45, 0.3, ["方法"], size=14, bold=True, color=RED)
+text(s, 4.05, 1.7, 5.45, 0.3, ["方法"], size=14, bold=True, color=DARK)
 text(s, 4.05, 2.05, 5.45, 1.75, [
     "前 14 天只學習：每項指標用中位數與 MAD 建立個體基線",
     "週末作息差異（主人在家較活潑）從自己的紀錄估計並扣除",
@@ -353,7 +361,7 @@ for i, (t, d) in enumerate(steps):
     text(s, 3.3, y, 2.4, 0.3, [t], size=12.5, bold=True)
     text(s, 3.3, y + 0.3, 2.7, 0.38, [d], size=10, color=GRAY)
 box(s, 6.15, 1.72, 3.35, 3.05, PINK)
-text(s, 6.3, 1.82, 3.1, 0.3, ["安全設計"], size=14, bold=True, color=RED)
+text(s, 6.3, 1.82, 3.1, 0.3, ["安全設計"], size=14, bold=True, color=DARK)
 text(s, 6.3, 2.2, 3.1, 2.5, [
     "等級由 ② 決定，模型不能調高或調低",
     "模型不得自行編造數字",
@@ -367,7 +375,7 @@ frame(s, "05", "Demo／Prototype 展示", "已完成可執行的原型：一個�
 picture(s, IMG + "demo_top.png", 0.5, 1.7, h=2.8)
 picture(s, IMG + "vet.png", 3.2, 1.7, h=2.4)
 text(s, 3.2, 4.15, 2.5, 0.6, ["就醫觀察紀錄（可列印）"], size=10, color=GRAY)
-text(s, 5.85, 1.7, 3.65, 0.3, ["目前完成程度"], size=14, bold=True, color=RED)
+text(s, 5.85, 1.7, 3.65, 0.3, ["目前完成程度"], size=14, bold=True, color=DARK)
 table(s, 5.85, 2.05, 3.65, [
     ["模組", "狀態"],
     ["① 看懂行為", "✔ 真實影片實測（YOLO）"],
@@ -396,7 +404,7 @@ for i, (ours, base, label, sub) in enumerate(stats):
                                        ("　本方案", {"size": 10, "color": GRAY})]])
     text(s, x + 0.15, 2.78, 2.6, 0.3, [f"一般族群固定範圍：{base}"], size=11, color=GRAY)
     text(s, x + 0.15, 3.08, 2.6, 0.3, [sub], size=10, color=GRAY)
-text(s, 0.5, 3.6, 9.0, 0.3, ["怎麼驗證"], size=13, bold=True, color=RED)
+text(s, 0.5, 3.6, 9.0, 0.3, ["怎麼驗證"], size=13, bold=True, color=DARK)
 text(s, 0.5, 3.9, 9.0, 0.9, [
     "10 組模擬 × 3 隻寵物 × 60 天，每組放入 3 段已知行為變化（食慾下降、喝水與如廁逐漸增加、如廁突增）與 1 段無害單日事件；"
     "對照組以 200 隻模擬健康貓狗訂出的物種正常範圍，套用完全相同的升級規則。",
@@ -409,7 +417,7 @@ frame(s, "06", "獨特性與預期效益", "差別不在多一台攝影機，而
 table(s, 0.5, 1.72, 9.0, [
     ["", "現有做法", "本方案的差異", "預期改善"],
     ["察覺方式", "一般寵物攝影機：移動或聲音觸發，需要人看影片", "AI 自動把影像轉成行為紀錄", "飼主每天只要看一句話"],
-    ["判斷標準", "固定門檻：「超過 X 就通知」", "個體化基線，持續偏離才升級", "減少誤報與漏報（模擬：發現率 60% → 90%）"],
+    ["判斷標準", "固定門檻：「超過 X 就通知」", "個體化基線，持續偏離才升級", "更少漏掉變化（模擬：發現率 60% → 90%）"],
     ["多寵物", "混在一起，分不清是誰", "每隻分開追蹤、分開建立基線", "知道是哪一隻不一樣"],
     ["就醫溝通", "憑記憶描述", "自動產生就醫觀察紀錄", "看診時溝通更有效率"],
     ["用語安全", "—", "AI 措辭＋禁用詞護欄＋免責聲明", "引導及早諮詢，不取代獸醫"],
@@ -442,7 +450,7 @@ for i, (when, t, items) in enumerate(road):
     x = 0.5 + i * 3.05
     box(s, x, 1.75, 2.85, 2.55, PINK if i == 2 else LIGHT)
     text(s, x + 0.15, 1.85, 2.6, 0.3, [when], size=11, color=GRAY, bold=True)
-    text(s, x + 0.15, 2.12, 2.6, 0.35, [t], size=15, bold=True, color=RED)
+    text(s, x + 0.15, 2.12, 2.6, 0.35, [t], size=15, bold=True, color=DARK)
     text(s, x + 0.15, 2.55, 2.6, 1.7, items, size=11, bullet=True, space_after=4)
 text(s, 0.5, 4.42, 9.0, 0.35, [
     [("合作對象｜", {"bold": True}), ("動物醫院、寵物攝影機與智慧碗廠商、寵物保險、高齡寵物照護社群", {})]], size=11)
