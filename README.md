@@ -8,7 +8,21 @@
 | ① 視覺模組：影片轉成行為時間軸 | ✅ 原型完成（`pet_vision/`） |
 | ② 異常偵測：個體化基線、偏離提醒 | ✅ 原型完成（`pet_anomaly/`） |
 | ③ 白話提醒＋就醫觀察紀錄（LLM，含用語護欄與免責聲明） | ✅ 原型完成（`pet_notify/`） |
-| ④ 儀表板 | 待開發 |
+| ④ 一鍵 Demo（① → ② → ③，產生總覽網頁） | ✅（`petsentinel/`） |
+
+### 一鍵跑完整 Demo
+
+```bash
+python -m petsentinel demo --out output/demo
+```
+
+加上影片（會把影片分析一起放進總覽頁）：
+
+```bash
+python -m petsentinel demo --video "cat eating.mp4" --zones cat_zones.json --detector onnx --model yolo11n.onnx --out output/demo
+```
+
+完成後打開 `output/demo/index.html`。這一頁依照 ① → ② → ③ 排列，適合直接錄成 Demo 影片。影片片段不是一整天的紀錄，所以不會混進每日資料：影片用來展示「怎麼看懂行為」，60 天的模擬紀錄用來展示「長期下來會怎樣提醒」。
 
 ---
 
