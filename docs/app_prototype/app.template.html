@@ -1,0 +1,234 @@
+<title>毛孩日常哨兵</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one phone-width app column (full width on phones, framed on desktop); sticky date bar, tab bar at the bottom. */
+:root {
+  --bg: #eef1f4; --surface: #ffffff; --sunk: #f5f7f9; --ink: #1c2430; --muted: #5d6a77; --line: #dde3e9;
+  --accent: #2e5e8c; --accent-soft: #e4edf6;
+  --ok: #2f8a58; --ok-soft: #e3f3ea; --watch: #a8760f; --watch-soft: #fbf1db; --consult: #c4571d; --consult-soft: #fbe7dc;
+  --learn: #7b8794; --learn-soft: #eef0f2; --band: #cfe0f0;
+  --f-body: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161c; --surface: #1a2129; --sunk: #141a20; --ink: #e6ebf0; --muted: #9aa7b4; --line: #2b3540;
+  --accent: #8db8e3; --accent-soft: #1f3247;
+  --ok: #6cc796; --ok-soft: #173326; --watch: #e5b450; --watch-soft: #352a12; --consult: #f0915a; --consult-soft: #3a2216;
+  --learn: #9aa7b4; --learn-soft: #222b34; --band: #29425c; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11161c; --surface: #1a2129; --sunk: #141a20; --ink: #e6ebf0; --muted: #9aa7b4; --line: #2b3540;
+  --accent: #8db8e3; --accent-soft: #1f3247;
+  --ok: #6cc796; --ok-soft: #173326; --watch: #e5b450; --watch-soft: #352a12; --consult: #f0915a; --consult-soft: #3a2216;
+  --learn: #9aa7b4; --learn-soft: #222b34; --band: #29425c; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px; }
+.app { max-width: 430px; margin: 0 auto; background: var(--sunk); border: 1px solid var(--line); border-radius: 28px; overflow: hidden;
+  display: flex; flex-direction: column; min-height: 760px; }
+@media (max-width: 480px) { body { padding-block: 0; } .app { border-radius: 0; border: 0; min-height: 100vh; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); max-width: none; } }
+header.top { background: var(--surface); padding: 16px 18px 12px; border-bottom: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+.brand { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.brand h1 { font-size: 18px; margin: 0; font-weight: 900; letter-spacing: .5px; }
+.sim { font-size: 12px; color: var(--watch); background: var(--watch-soft); padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.datebar { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.datebar button { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font-size: 18px; cursor: pointer; }
+.datebar button:focus-visible, .tabs button:focus-visible, .chip:focus-visible, .petcard button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.date { flex: 1; text-align: center; }
+.date b { display: block; font-size: 17px; font-family: var(--f-num); font-weight: 500; }
+.date small { color: var(--muted); font-size: 12px; }
+input[type=range] { width: 100%; margin-top: 8px; accent-color: var(--accent); }
+.scrubhint { font-size: 12px; color: var(--muted); text-align: center; }
+main { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.summary { font-size: 14px; color: var(--muted); }
+.summary b { color: var(--ink); }
+.petcard { background: var(--surface); border-radius: 18px; padding: 16px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.pet { font-weight: 700; font-size: 15px; }
+.pet small { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.lv { font-size: 12.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.lv.normal { color: var(--ok); background: var(--ok-soft); } .lv.watch { color: var(--watch); background: var(--watch-soft); }
+.lv.consult { color: var(--consult); background: var(--consult-soft); } .lv.learning { color: var(--learn); background: var(--learn-soft); }
+.petcard h2 { font-size: 17px; margin: 4px 0 0; text-wrap: balance; }
+.petcard p { margin: 0; }
+.next { font-weight: 700; color: var(--accent); }
+.disc { font-size: 11.5px; color: var(--muted); background: var(--sunk); border-radius: 10px; padding: 8px 10px; margin-top: 4px; line-height: 1.5; }
+.petcard button.link { align-self: flex-start; border: 0; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 10px; cursor: pointer; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+.chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 700; }
+.metric { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.metric .row b { font-family: var(--f-num); font-weight: 500; font-size: 16px; }
+.metric .row span { font-size: 14px; }
+.metric small { color: var(--muted); font-size: 12.5px; }
+.metric.off { border-color: var(--consult); }
+svg { display: block; width: 100%; height: auto; }
+.empty { color: var(--muted); font-size: 14px; background: var(--surface); border-radius: 14px; padding: 16px; border: 1px dashed var(--line); }
+.alert { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.alert .when { font-family: var(--f-num); font-size: 13px; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--surface); border-radius: 14px; overflow: hidden; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+th { background: var(--sunk); font-weight: 700; font-size: 12.5px; color: var(--muted); }
+td.n { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+tr.off td { background: var(--consult-soft); }
+.tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--line); }
+h3 { font-size: 15px; margin: 4px 0 0; }
+nav.tabs { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px); position: sticky; bottom: 0; }
+.tabs button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 12.5px; padding: 10px 0 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tabs button svg { width: 22px; height: 22px; }
+.tabs button[aria-current=page] { color: var(--accent); font-weight: 700; }
+.foot { font-size: 12px; color: var(--muted); text-align: center; margin: 14px auto 0; max-width: 430px; }
+@media (prefers-reduced-motion: no-preference) { .petcard, .metric, .alert { animation: rise .25s ease both; } @keyframes rise { from { transform: translateY(4px); opacity: .6 } to { transform: none; opacity: 1 } } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1>🐾 毛孩日常哨兵</h1><span class="sim">示範・模擬資料</span></div>
+    <div class="datebar">
+      <button id="prev" aria-label="前一天">‹</button>
+      <div class="date"><b id="dateLabel">—</b><small id="dateSub"></small></div>
+      <button id="next" aria-label="後一天">›</button>
+    </div>
+    <input id="scrub" type="range" min="0" max="59" value="0" aria-label="示範日期">
+    <div class="scrubhint">拖動日期，看系統每天怎麼判斷</div>
+  </header>
+  <main id="view"></main>
+  <nav class="tabs" aria-label="主要頁面">
+    <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-7 8 7v9H4z"/></svg>今日</button>
+    <button data-tab="trends"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 8-9"/></svg>趨勢</button>
+    <button data-tab="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4zM10 20h4"/></svg>提醒</button>
+    <button data-tab="record"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h8l4 4v14H7zM10 11h6M10 15h6"/></svg>就醫紀錄</button>
+  </nav>
+</div>
+<p class="foot">畫面中的數字由「毛孩日常哨兵」模組 ② ③ 依模擬的 60 天行為資料實際計算產生，用於示範，不代表真實寵物。</p>
+
+<script>
+const DATA = __DATA__;
+const LV = { learning: "建立基線中", normal: "正常", watch: "留意", consult: "建議諮詢獸醫" };
+const SP = { cat: "貓", dog: "狗" };
+const MET = [["喝水次數", "次", 0], ["喝水總時間", "分鐘", 1], ["進食次數", "次", 2], ["進食總時間", "分鐘", 3],
+             ["如廁次數", "次", 4], ["活動時間", "分鐘", 5], ["休息時間", "小時", 6]];
+const dates = DATA.pets[0].days.map(d => d.d);
+const st = { i: dates.indexOf("2026-10-13"), tab: "today", pet: DATA.pets[1].id };
+if (st.i < 0) st.i = dates.length - 1;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = (v, u) => u === "次" ? (Math.abs(v - Math.round(v)) < .05 ? Math.round(v) : v.toFixed(1)) : v.toFixed(1);
+const petById = id => DATA.pets.find(p => p.id === id);
+const wk = d => "日一二三四五六"[new Date(d + "T00:00:00").getDay()];
+
+function chart(p, mi) {
+  const span = 21, from = Math.max(0, st.i - span + 1), days = p.days.slice(from, st.i + 1);
+  const W = 320, H = 86, pad = 6;
+  const vals = days.map(d => d.m[mi]);
+  const lo = days.map(d => d.b ? d.b[mi][1] : null), hi = days.map(d => d.b ? d.b[mi][2] : null);
+  const all = vals.concat(hi.filter(v => v != null)), max = Math.max(...all) * 1.1 || 1;
+  const x = k => pad + (W - 2 * pad) * (days.length === 1 ? 1 : k / (days.length - 1));
+  const y = v => H - pad - (H - 2 * pad) * (v / max);
+  let band = "";
+  const idx = days.map((d, k) => d.b ? k : -1).filter(k => k >= 0);
+  if (idx.length > 1) {
+    band = "M" + idx.map(k => `${x(k)},${y(hi[k])}`).join("L") + "L" + idx.slice().reverse().map(k => `${x(k)},${y(lo[k])}`).join("L") + "Z";
+  }
+  const line = vals.map((v, k) => `${k ? "L" : "M"}${x(k)},${y(v)}`).join("");
+  const dots = days.map((d, k) => d.lv === "consult" || d.lv === "watch"
+    ? `<circle cx="${x(k)}" cy="${y(vals[k])}" r="3.6" fill="var(--${d.lv})"/>` : "").join("");
+  const last = days.length - 1;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${MET[mi][0]}最近 ${days.length} 天">
+    ${band ? `<path d="${band}" fill="var(--band)" opacity=".7"/>` : ""}
+    <path d="${line}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
+    ${dots}<circle cx="${x(last)}" cy="${y(vals[last])}" r="4.2" fill="var(--accent)"/></svg>`;
+}
+
+function today() {
+  const cards = DATA.pets.map(p => {
+    const d = p.days[st.i];
+    return `<article class="petcard">
+      <div class="row"><span class="pet">${esc(p.name)}<small>${SP[p.species]}</small></span><span class="lv ${d.lv}">${LV[d.lv]}</span></div>
+      <h2>${esc(d.t)}</h2><p>${esc(d.body)}</p><p class="next">👉 ${esc(d.nx)}</p>
+      <p class="disc">${esc(DATA.disclaimer)}</p>
+      <button class="link" data-goto="${p.id}">看${esc(p.name)}的趨勢</button></article>`;
+  }).join("");
+  const n = { consult: 0, watch: 0 };
+  DATA.pets.forEach(p => { const l = p.days[st.i].lv; if (l in n) n[l]++; });
+  const s = n.consult ? `<b>${n.consult} 隻建議諮詢獸醫</b>` + (n.watch ? `，${n.watch} 隻留意` : "")
+    : n.watch ? `<b>${n.watch} 隻今天有點不一樣</b>` : "<b>大家今天都和平常差不多</b>";
+  return `<p class="summary">${DATA.pets.length} 隻毛孩：${s}</p>${cards}`;
+}
+
+function picker() {
+  return `<div class="chips" role="group" aria-label="選擇寵物">${DATA.pets.map(p =>
+    `<button class="chip" data-pet="${p.id}" aria-pressed="${p.id === st.pet}">${esc(p.name)}</button>`).join("")}</div>`;
+}
+
+function trends() {
+  const p = petById(st.pet), d = p.days[st.i];
+  if (!d.b) return picker() + `<p class="empty">${esc(p.name)}還在建立基線（前 14 天），這段期間只記錄、不比較。往後拖動日期就能看到比較結果。</p>`;
+  const items = MET.map(([label, unit, mi]) => {
+    const [usual, lo, hi] = d.b[mi], v = d.m[mi], off = v < lo || v > hi;
+    return `<section class="metric${off ? " off" : ""}">
+      <div class="row"><span>${label}</span><b>${fmt(v, unit)} <small>${unit}</small></b></div>
+      <small>平常約 ${fmt(usual, unit)} ${unit}・平常範圍 ${fmt(lo, unit)}–${fmt(hi, unit)}${off ? "・<b style='color:var(--consult)'>超出範圍</b>" : ""}</small>
+      ${chart(p, mi)}</section>`;
+  }).join("");
+  return picker() + `<p class="summary">${esc(p.name)}・最近 21 天。藍色帶是牠自己的平常範圍，黃點＝留意，橘點＝建議諮詢獸醫。</p>` + items;
+}
+
+function alerts() {
+  const list = [];
+  DATA.pets.forEach(p => p.days.slice(0, st.i + 1).forEach(d => {
+    if (d.lv === "watch" || d.lv === "consult") list.push({ p, d });
+  }));
+  list.sort((a, b) => b.d.d.localeCompare(a.d.d) || a.p.name.localeCompare(b.p.name));
+  if (!list.length) return `<p class="empty">到 ${dates[st.i]} 為止還沒有任何提醒。</p>`;
+  return `<p class="summary">到 ${dates[st.i]} 為止共 ${list.length} 則提醒（最新的在上面）</p>` + list.slice(0, 40).map(({ p, d }) =>
+    `<div class="alert"><div class="row"><span class="when">${d.d}（${wk(d.d)}）・${esc(p.name)}</span><span class="lv ${d.lv}">${LV[d.lv]}</span></div>
+     <b>${esc(d.t)}</b><span>${esc(d.body)}</span></div>`).join("");
+}
+
+function record() {
+  const p = petById(st.pet), d = p.days[st.i];
+  const from = Math.max(0, st.i - 13), span = p.days.slice(from, st.i + 1), last3 = p.days.slice(Math.max(0, st.i - 2), st.i + 1);
+  if (!d.b) return picker() + `<p class="empty">基線建立完成後（第 15 天起）才能產生就醫觀察紀錄。</p>`;
+  const rows = MET.map(([label, unit, mi]) => {
+    const [usual, lo, hi] = d.b[mi], avg = last3.reduce((s, x) => s + x.m[mi], 0) / last3.length;
+    const ch = usual ? ((avg - usual) / usual * 100) : 0, off = avg < lo || avg > hi;
+    return `<tr class="${off ? "off" : ""}"><td>${label}（${unit}）</td><td class="n">${fmt(usual, unit)}</td><td class="n">${avg.toFixed(1)}</td><td class="n">${ch >= 0 ? "+" : ""}${ch.toFixed(0)}%</td></tr>`;
+  }).join("");
+  const log = span.filter(x => x.lv === "watch" || x.lv === "consult").map(x =>
+    `<li><b style="color:var(--${x.lv})">${x.d}　${LV[x.lv]}</b>　${esc(x.rs.slice(0, 2).map(r => `${r[0]} ${fmt(r[2], r[1])}${r[1]}（平常約 ${fmt(r[3], r[1])}）`).join("；") || "多項指標的組合和平常不同")}</li>`).join("");
+  return picker() + `<h3>${esc(p.name)} 就醫觀察紀錄</h3>
+    <p class="summary">${SP[p.species]}・觀察期間 ${span[0].d} ～ ${d.d}・資料來源：居家攝影機自動統計（示範為模擬資料）</p>
+    <div class="tablewrap"><table><thead><tr><th>項目</th><th>平常值</th><th>最近 3 天平均</th><th>變化</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="summary">底色標示：最近 3 天平均超出這隻寵物的平常範圍。</p>
+    <h3>提醒紀錄</h3>${log ? `<ul style="margin:0;padding-left:20px;font-size:14px">${log}</ul>` : `<p class="empty">這 14 天沒有提醒。</p>`}
+    <p class="disc">${esc(DATA.disclaimer)}</p>`;
+}
+
+const VIEWS = { today, trends, alerts, record };
+function render() {
+  const d = dates[st.i], day = st.i + 1;
+  $("#dateLabel").textContent = `${d}（${wk(d)}）`;
+  $("#dateSub").textContent = day <= 14 ? `第 ${day} 天・建立基線中` : `第 ${day} 天`;
+  $("#scrub").value = st.i;
+  $("#prev").disabled = st.i === 0; $("#next").disabled = st.i === dates.length - 1;
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === st.tab ? "page" : "false"));
+  $("#view").innerHTML = VIEWS[st.tab]();
+}
+function go(tab) { st.tab = tab; if (location.hash !== "#" + tab) history.replaceState(null, "", "#" + tab); render(); window.scrollTo(0, 0); }
+$("#scrub").max = dates.length - 1;
+$("#scrub").addEventListener("input", e => { st.i = +e.target.value; render(); });
+$("#prev").addEventListener("click", () => { if (st.i > 0) { st.i--; render(); } });
+$("#next").addEventListener("click", () => { if (st.i < dates.length - 1) { st.i++; render(); } });
+document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) go(b.dataset.tab); });
+$("#view").addEventListener("click", e => {
+  const g = e.target.closest("[data-goto]"); if (g) { st.pet = g.dataset.goto; go("trends"); return; }
+  const c = e.target.closest("[data-pet]"); if (c) { st.pet = c.dataset.pet; render(); }
+});
+function fromHash() { const h = location.hash.slice(1); if (VIEWS[h]) st.tab = h; render(); }
+window.addEventListener("hashchange", fromHash);
+fromHash();
+</script>
