@@ -6,6 +6,11 @@
 
 | 模組 | 狀態 |
 |---|---|
+| ① 視覺模組：影片轉成行為時間軸 | ✅ 原型完成（`pet_vision/`） |
+| ② 異常偵測：個體化基線、偏離提醒 | ✅ 原型完成（`pet_anomaly/`） |
+| ③ 白話提醒＋就醫觀察紀錄（LLM，含用語護欄與免責聲明） | ✅ 原型完成（`pet_notify/`） |
+| ④ 一鍵 Demo（① → ② → ③，產生總覽網頁） | ✅（`petsentinel/`） |
+
 ## Windows 一鍵使用（不用打指令）
 
 在 `AI_animal` 資料夾裡雙擊：
@@ -17,11 +22,6 @@
 | `update.bat` | 下載最新版程式（`git pull`） | Claude 說「程式更新好了」的時候 |
 
 資料夾裡有 `cat eating.mp4` 和 `cat_zones.json` 時，`run_demo.bat` 會自動把影片分析放進 Demo；有 `yolo11n.onnx` 時會自動改用 YOLO 偵測。
-
-| ① 視覺模組：影片轉成行為時間軸 | ✅ 原型完成（`pet_vision/`） |
-| ② 異常偵測：個體化基線、偏離提醒 | ✅ 原型完成（`pet_anomaly/`） |
-| ③ 白話提醒＋就醫觀察紀錄（LLM，含用語護欄與免責聲明） | ✅ 原型完成（`pet_notify/`） |
-| ④ 一鍵 Demo（① → ② → ③，產生總覽網頁） | ✅（`petsentinel/`） |
 
 ### 一鍵跑完整 Demo
 
