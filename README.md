@@ -1,7 +1,8 @@
 # 毛孩日常哨兵（PetSentinel）
 
 2026 法國皇家 AI for Pets 創新徵件計畫，「預防保健」主題提案。
-提案架構、Demo 規劃與資料集清單見 [`docs/proposal-plan.md`](docs/proposal-plan.md)。
+- 提案進度、時程、Demo 腳本與合規檢查：[`docs/proposal-plan.md`](docs/proposal-plan.md)
+- 初賽提案簡報（官方模板）：[`docs/proposal/PetSentinel_proposal.pdf`](docs/proposal/PetSentinel_proposal.pdf)、[`.pptx`](docs/proposal/PetSentinel_proposal.pptx)
 
 | 模組 | 狀態 |
 |---|---|
