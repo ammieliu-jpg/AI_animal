@@ -60,14 +60,14 @@ SCENES = [
     <div class="card" style="flex:1"><div class="row" style="gap:22px"><div class="num">1</div><h2 style="font-size:46px">看不到</h2></div>
       <p style="margin-top:22px">上班時沒人在家，變化只能靠運氣發現</p></div>
     <div class="card" style="flex:1"><div class="row" style="gap:22px"><div class="num">2</div><h2 style="font-size:46px">看不懂</h2></div>
-      <p style="margin-top:22px">一般攝影機有動靜就通知，通知太多最後被關掉</p></div>
+      <p style="margin-top:22px">攝影機提醒多為即時事件或固定門檻，分不出每隻的差異</p></div>
     <div class="card" style="flex:1"><div class="row" style="gap:22px"><div class="num">3</div><h2 style="font-size:46px">說不清</h2></div>
       <p style="margin-top:22px">看診時只能說「好像喝比較多」</p></div>
   </div>
 </div>"""), subs=[("早上八點出門，晚上八點回家", 4.5),
                   ("中間這 12 小時，毛孩過得好不好，我們其實不知道", 5.5),
                   ("貓天性會隱藏不適，喝水、吃飯、上廁所的變化很容易錯過", 6),
-                  ("一般寵物攝影機有動靜就通知，通知太多，最後乾脆關掉", 6)]),
+                  ("市售攝影機多半是即時事件或固定門檻的提醒，分不出每一隻本來的差異", 6)]),
 
     dict(id="03_overview", dur=14, motion="zoom", html=page("""
 <div class="wrap">
