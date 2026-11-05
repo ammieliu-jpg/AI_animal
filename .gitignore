@@ -11,3 +11,4 @@ output/
 *_snapshot.jpg
 snapshot.jpg
 !docs/demo_video/*.mp4
+videos/

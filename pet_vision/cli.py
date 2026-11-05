@@ -79,6 +79,23 @@ def cmd_snapshot(args) -> None:
     print(f"saved {args.out} ({w}x{h})")
 
 
+def cmd_init(args) -> None:
+    from .batch import write_templates
+    for p in write_templates(Path(args.folder)):
+        print(f"created {p}")
+
+
+def cmd_prepare(args) -> None:
+    from .batch import prepare
+    for n in prepare(Path(args.folder), args.model):
+        print(n)
+
+
+def cmd_batch(args) -> None:
+    from .batch import run_batch
+    run_batch(Path(args.folder), Path(args.out), args.detector, args.model, args.fps, args.annotate)
+
+
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(prog="pet_vision", description="毛孩日常哨兵 — ① 視覺模組")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -106,6 +123,24 @@ def main(argv: list[str] | None = None) -> None:
     n.add_argument("--at", type=float, default=0.0, help="time in seconds")
     n.add_argument("--out", default="snapshot.jpg")
     n.set_defaults(func=cmd_snapshot)
+
+    i = sub.add_parser("init", help="create sources.csv / labels.csv templates in a video folder")
+    i.add_argument("folder")
+    i.set_defaults(func=cmd_init)
+
+    pr = sub.add_parser("prepare", help="snapshots for every video (+ draft bowl zones with --model)")
+    pr.add_argument("folder")
+    pr.add_argument("--model", help="ONNX YOLO model: auto-draft bowl zones")
+    pr.set_defaults(func=cmd_prepare)
+
+    b = sub.add_parser("batch", help="run every video in a folder and score against labels.csv")
+    b.add_argument("folder")
+    b.add_argument("--out", default="output/batch")
+    b.add_argument("--detector", choices=["motion", "onnx"], default="motion")
+    b.add_argument("--model")
+    b.add_argument("--fps", type=float, default=5.0)
+    b.add_argument("--annotate", action="store_true", help="also write annotated videos (slower)")
+    b.set_defaults(func=cmd_batch)
 
     args = p.parse_args(argv)
     args.func(args)

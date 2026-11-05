@@ -23,6 +23,8 @@
 | `run_demo.bat` | 跑完整 Demo，跑完自動用瀏覽器打開 `output\demo\index.html` | 每次要看 Demo |
 | `update.bat` | 下載最新版程式（`git pull`） | Claude 說「程式更新好了」的時候 |
 
+**影像辨識批次測試**（多支影片 → 準確率報表）：依序雙擊 `1_init_videos.bat`、`2_prepare_videos.bat`、`3_run_batch.bat`，詳細步驟見 [`docs/video_testing_guide.md`](docs/video_testing_guide.md)。
+
 資料夾裡有 `cat eating.mp4` 和 `cat_zones.json` 時，`run_demo.bat` 會自動把影片分析放進 Demo；有 `yolo11n.onnx` 時會自動改用 YOLO 偵測。
 
 ### 一鍵跑完整 Demo
