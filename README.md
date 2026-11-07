@@ -7,7 +7,8 @@
 - 評審問答準備（附外部來源）：[`docs/qa_prep.md`](docs/qa_prep.md)
 - 簡報講稿（也已寫進簡報備忘稿）：[`docs/pitch_script.md`](docs/pitch_script.md)
 - 候選測試影片清單：[`docs/candidate_videos.md`](docs/candidate_videos.md)
-- App 互動原型：[`docs/app_prototype/`](docs/app_prototype/)
+- App 互動原型（含新手設定與同意流程）：[`docs/app_prototype/`](docs/app_prototype/)
+- 個資告知與同意草稿：[`docs/consent_draft.md`](docs/consent_draft.md)
 - 初賽提案簡報（官方模板）：[`docs/proposal/PetSentinel_proposal.pdf`](docs/proposal/PetSentinel_proposal.pdf)、[`.pptx`](docs/proposal/PetSentinel_proposal.pptx)
 
 | 模組 | 狀態 |

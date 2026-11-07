@@ -24,6 +24,7 @@
   --ok: #6cc796; --ok-soft: #173326; --watch: #e5b450; --watch-soft: #352a12; --consult: #f0915a; --consult-soft: #3a2216;
   --learn: #9aa7b4; --learn-soft: #222b34; --band: #29425c; color-scheme: dark; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px; }
 .app { max-width: 430px; margin: 0 auto; background: var(--sunk); border: 1px solid var(--line); border-radius: 28px; overflow: hidden;
@@ -55,7 +56,7 @@ main { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 14px;
 .petcard p { margin: 0; }
 .next { font-weight: 700; color: var(--accent); }
 .disc { font-size: 11.5px; color: var(--muted); background: var(--sunk); border-radius: 10px; padding: 8px 10px; margin-top: 4px; line-height: 1.5; }
-.petcard button.link { align-self: flex-start; border: 0; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 10px; cursor: pointer; }
+.petcard button.link, .form button.link { align-self: flex-start; border: 0; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 10px; cursor: pointer; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer; }
 .chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 700; }
@@ -80,13 +81,47 @@ nav.tabs { display: grid; grid-template-columns: repeat(4, 1fr); background: var
 .tabs button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 12.5px; padding: 10px 0 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .tabs button svg { width: 22px; height: 22px; }
 .tabs button[aria-current=page] { color: var(--accent); font-weight: 700; }
+.iconbtn { border: 1px solid var(--line); background: var(--sunk); color: var(--ink); border-radius: 10px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; }
+.ob { display: flex; flex-direction: column; gap: 14px; }
+.ob h2 { font-size: 22px; margin: 0; text-wrap: balance; }
+.ob .lead { color: var(--muted); margin: 0; }
+.steps { display: flex; gap: 6px; }
+.steps i { flex: 1; height: 4px; border-radius: 4px; background: var(--line); }
+.steps i.on { background: var(--accent); }
+.form { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.form input, .form select, .lifeform select, .lifeform input { font: inherit; font-size: 15px; color: var(--ink); background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; align-self: flex-start; }
+.seg button { border: 0; background: var(--sunk); color: var(--ink); font: inherit; padding: 6px 16px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--accent); color: var(--surface); font-weight: 700; }
+.check { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; font-size: 14px; }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.check small { color: var(--muted); display: block; }
+.req { color: var(--consult); font-size: 12px; font-weight: 700; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { border: 0; border-radius: 12px; padding: 11px 18px; font: inherit; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--surface); }
+.btn.ghost { background: var(--accent-soft); color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn:focus-visible, .iconbtn:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.err { color: var(--consult); font-size: 13px; margin: 0; }
+details.notice { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; font-size: 13.5px; }
+details.notice summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+details.notice ol { padding-left: 20px; margin: 8px 0 0; color: var(--muted); }
+.ctx { font-size: 13px; color: var(--muted); background: var(--accent-soft); border-radius: 10px; padding: 6px 10px; }
+.lifeform { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--sunk); border-radius: 12px; padding: 10px; }
+.ref { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.ref .row span:last-child { font-family: var(--f-num); font-size: 13px; }
+.ref table { font-size: 12.5px; } .ref th, .ref td { padding: 6px 8px; }
+.tag { white-space: nowrap; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--learn-soft); color: var(--muted); }
+.tag.out { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .foot { font-size: 12px; color: var(--muted); text-align: center; margin: 14px auto 0; max-width: 430px; }
 @media (prefers-reduced-motion: no-preference) { .petcard, .metric, .alert { animation: rise .25s ease both; } @keyframes rise { from { transform: translateY(4px); opacity: .6 } to { transform: none; opacity: 1 } } }
 </style>
 
 <div class="app">
-  <header class="top">
-    <div class="brand"><h1>🐾 毛孩日常哨兵</h1><span class="sim">示範・模擬資料</span></div>
+  <header class="top" id="topbar">
+    <div class="brand"><h1>🐾 毛孩日常哨兵</h1><span class="row" style="gap:8px"><span class="sim">示範・模擬資料</span><button class="iconbtn" id="settingsBtn" aria-label="設定">⚙</button></span></div>
     <div class="datebar">
       <button id="prev" aria-label="前一天">‹</button>
       <div class="date"><b id="dateLabel">—</b><small id="dateSub"></small></div>
@@ -112,7 +147,19 @@ const SP = { cat: "貓", dog: "狗" };
 const MET = [["喝水次數", "次", 0], ["喝水總時間", "分鐘", 1], ["進食次數", "次", 2], ["進食總時間", "分鐘", 3],
              ["如廁次數", "次", 4], ["活動時間", "分鐘", 5], ["休息時間", "小時", 6]];
 const dates = DATA.pets[0].days.map(d => d.d);
-const st = { i: dates.indexOf("2026-10-13"), tab: "today", pet: DATA.pets[1].id };
+const st = { i: dates.indexOf("2026-10-13"), tab: "today", pet: DATA.pets[1].id, ob: null, lifeFor: null };
+const LIFE_TYPES = ["換飼料或改變餵食", "天氣變熱或變冷", "搬家或家具變動", "家裡來客人", "剛看過獸醫", "其他"];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ps_" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("ps_" + k, JSON.stringify(v)); } catch (e) {} },
+  clear() { try { ["setup", "events"].forEach(k => localStorage.removeItem("ps_" + k)); } catch (e) {} },
+};
+let setup = store.get("setup", null);
+let userEvents = store.get("events", []);
+const allEvents = () => DATA.lifeEvents.concat(userEvents);
+const near = (petId, d, days = 2) => allEvents().filter(e => e.pet === petId &&
+  Math.abs((new Date(e.d) - new Date(d)) / 864e5) <= days && e.d <= d);
+const md = d => d.slice(5).replace("-", "/");
 if (st.i < 0) st.i = dates.length - 1;
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -140,7 +187,9 @@ function chart(p, mi) {
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${MET[mi][0]}最近 ${days.length} 天">
     ${band ? `<path d="${band}" fill="var(--band)" opacity=".7"/>` : ""}
     <path d="${line}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
-    ${dots}<circle cx="${x(last)}" cy="${y(vals[last])}" r="4.2" fill="var(--accent)"/></svg>`;
+    ${dots}${days.map((dd, k) => allEvents().some(e => e.pet === p.id && e.d === dd.d)
+      ? `<line x1="${x(k)}" x2="${x(k)}" y1="${pad}" y2="${H - pad}" stroke="var(--accent)" stroke-dasharray="3 3" stroke-width="1.2"/>` : "").join("")}
+    <circle cx="${x(last)}" cy="${y(vals[last])}" r="4.2" fill="var(--accent)"/></svg>`;
 }
 
 function today() {
@@ -149,8 +198,11 @@ function today() {
     return `<article class="petcard">
       <div class="row"><span class="pet">${esc(p.name)}<small>${SP[p.species]}</small></span><span class="lv ${d.lv}">${LV[d.lv]}</span></div>
       <h2>${esc(d.t)}</h2><p>${esc(d.body)}</p><p class="next">👉 ${esc(d.nx)}</p>
+      ${ctxLine(p.id, d.d)}
       <p class="disc">${esc(DATA.disclaimer)}</p>
-      <button class="link" data-goto="${p.id}">看${esc(p.name)}的趨勢</button></article>`;
+      ${st.lifeFor === p.id ? lifeForm(p) : ""}
+      <div class="actions"><button class="link" data-goto="${p.id}">看${esc(p.name)}的趨勢</button>
+      <button class="link" data-life="${p.id}">📝 記錄生活事件</button></div></article>`;
   }).join("");
   const n = { consult: 0, watch: 0 };
   DATA.pets.forEach(p => { const l = p.days[st.i].lv; if (l in n) n[l]++; });
@@ -159,6 +211,17 @@ function today() {
   return `<p class="summary">${DATA.pets.length} 隻毛孩：${s}</p>${cards}`;
 }
 
+function ctxLine(petId, d) {
+  const ev = near(petId, d);
+  return ev.length ? `<p class="ctx">📝 這幾天有記錄：${ev.map(e => `${esc(e.type)}（${md(e.d)}${e.demo ? "，示範" : ""}）`).join("、")}。變化可能和這件事有關，系統仍會照常觀察。</p>` : "";
+}
+function lifeForm(p) {
+  return `<form class="lifeform" id="lifeForm" data-pet="${p.id}">
+    <select id="lifeType" aria-label="事件類型">${LIFE_TYPES.map(t => `<option>${t}</option>`).join("")}</select>
+    <input id="lifeDate" type="date" aria-label="日期" value="${dates[st.i]}" min="${dates[0]}" max="${dates[st.i]}">
+    <button class="btn" type="submit">儲存</button><button class="btn ghost" type="button" data-lifecancel>取消</button>
+    <small style="color:var(--muted);width:100%">記下可能影響作息的事，提醒時會一併顯示，幫你判斷原因。</small></form>`;
+}
 function picker() {
   return `<div class="chips" role="group" aria-label="選擇寵物">${DATA.pets.map(p =>
     `<button class="chip" data-pet="${p.id}" aria-pressed="${p.id === st.pet}">${esc(p.name)}</button>`).join("")}</div>`;
@@ -174,9 +237,22 @@ function trends() {
       <small>平常約 ${fmt(usual, unit)} ${unit}・平常範圍 ${fmt(lo, unit)}–${fmt(hi, unit)}${off ? "・<b style='color:var(--consult)'>超出範圍</b>" : ""}</small>
       ${chart(p, mi)}</section>`;
   }).join("");
-  return picker() + `<p class="summary">${esc(p.name)}・最近 21 天。藍色帶是牠自己的平常範圍，黃點＝留意，橘點＝建議諮詢獸醫。</p>` + items;
+  return picker() + `<p class="summary">${esc(p.name)}・最近 21 天。藍色帶是牠自己的平常範圍，黃點＝留意，橘點＝建議諮詢獸醫，虛線＝有記錄生活事件。</p>` + items + refCard(p, d);
 }
 
+function refCard(p, d) {
+  const ref = DATA.ref[p.species];
+  const rows = MET.map(([label, unit, mi]) => {
+    const k = DATA.keys[mi], [lo, hi] = ref[k], usual = d.b[mi][0];
+    const pos = usual < lo ? "偏少" : usual > hi ? "偏多" : "";
+    return `<tr><td>${label}（${unit}）</td><td class="n">${fmt(usual, unit)}</td><td class="n">${fmt(lo, unit)}–${fmt(hi, unit)}</td><td><span class="tag${pos ? " out" : ""}">${pos || "範圍內"}</span></td></tr>`;
+  }).join("");
+  const any = MET.some(([, , mi]) => { const k = DATA.keys[mi], [lo, hi] = ref[k], u = d.b[mi][0]; return u < lo || u > hi; });
+  return `<section class="ref"><b>參考資訊：牠的平常值和同物種相比</b>
+    <div class="tablewrap"><table><thead><tr><th>項目</th><th>牠的平常</th><th>參考範圍</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <small style="color:var(--muted)">${any ? `${esc(p.name)}有幾項平常值落在參考範圍外。這不代表有問題，下次健康檢查時可以和獸醫討論。` : `${esc(p.name)}的平常值都在參考範圍內。`}
+    提醒仍以牠自己的平常為準，這裡只提供參考。示範範圍取自 ${ref.n} 隻模擬健康${SP[p.species]}的第 5–95 百分位，正式版本需以真實資料建立。</small></section>`;
+}
 function alerts() {
   const list = [];
   DATA.pets.forEach(p => p.days.slice(0, st.i + 1).forEach(d => {
@@ -186,7 +262,7 @@ function alerts() {
   if (!list.length) return `<p class="empty">到 ${dates[st.i]} 為止還沒有任何提醒。</p>`;
   return `<p class="summary">到 ${dates[st.i]} 為止共 ${list.length} 則提醒（最新的在上面）</p>` + list.slice(0, 40).map(({ p, d }) =>
     `<div class="alert"><div class="row"><span class="when">${d.d}（${wk(d.d)}）・${esc(p.name)}</span><span class="lv ${d.lv}">${LV[d.lv]}</span></div>
-     <b>${esc(d.t)}</b><span>${esc(d.body)}</span></div>`).join("");
+     <b>${esc(d.t)}</b><span>${esc(d.body)}</span>${ctxLine(p.id, d.d)}</div>`).join("");
 }
 
 function record() {
@@ -208,8 +284,78 @@ function record() {
     <p class="disc">${esc(DATA.disclaimer)}</p>`;
 }
 
-const VIEWS = { today, trends, alerts, record };
+const DIETS = ["乾飼料", "濕食", "乾濕混合", "其他"];
+const blankPet = () => ({ species: "cat", name: "", age: "", weight: "", diet: "乾飼料", note: "" });
+const CONSENTS = [
+  ["c1", true, "我同意蒐集與處理我的聯絡資料與寵物資料，用於提供本服務。", "可隨時在設定中查詢、更正或刪除。"],
+  ["c2", true, "我了解攝影機影像在家中裝置上分析，只保留行為統計（例如「喝水 12 次」），不上傳影像。", ""],
+  ["c3", true, "若畫面可能拍到家人或訪客，我會事先告知並取得他們的同意。", ""],
+  ["c4", true, "我了解本服務只提供輔助參考，不能取代獸醫師的診斷、治療或專業建議。", ""],
+  ["c5", false, "同意以去識別化的統計資料協助改善服務。", "選填，不同意也能正常使用。"],
+];
+function obSteps(n) { return `<div class="steps" aria-hidden="true">${[1, 2, 3, 4].map(k => `<i class="${k <= n ? "on" : ""}"></i>`).join("")}</div>`; }
+function onboarding() {
+  const o = st.ob;
+  if (o.step === 0) return `<div class="ob"><h2>讓上班時也能知道毛孩過得好不好</h2>
+    <p class="lead">毛孩日常哨兵用居家攝影機記錄吃、喝、如廁和活動，先學習每隻寵物自己的作息，之後只在「和牠自己的平常不一樣」時提醒你。</p>
+    <div class="form"><b>設定只要 4 步</b><span>1. 登記寵物　2. 確認個資與影像使用　3. 健康檢查建議　4. 開始學習</span></div>
+    <div class="actions"><button class="btn" data-ob="next">開始設定</button><button class="btn ghost" data-ob="skip">直接看示範</button></div></div>`;
+  if (o.step === 1) return `<div class="ob">${obSteps(1)}<h2>家裡有哪些毛孩？</h2>
+    <p class="lead">先登記，系統就能分辨是哪一隻，並把飲食習慣納入考量（例如吃濕食的貓本來就喝比較少水）。</p>
+    ${o.pets.map((p, k) => `<div class="form" data-idx="${k}">
+      <div class="row"><b>第 ${k + 1} 隻</b>${o.pets.length > 1 ? `<button class="link" data-rm="${k}">移除</button>` : ""}</div>
+      <div class="seg" role="group" aria-label="物種"><button type="button" data-sp="cat" aria-pressed="${p.species === "cat"}">🐱 貓</button><button type="button" data-sp="dog" aria-pressed="${p.species === "dog"}">🐶 狗</button></div>
+      <label>名字<input id="pn${k}" data-f="name" value="${esc(p.name)}" placeholder="例如：小黑" maxlength="20"></label>
+      <div class="grid2"><label>年齡（歲）<input id="pa${k}" data-f="age" type="number" min="0" max="30" step="0.5" value="${esc(p.age)}"></label>
+      <label>體重（公斤）<input id="pw${k}" data-f="weight" type="number" min="0" max="80" step="0.1" value="${esc(p.weight)}"></label></div>
+      <label>主要飲食<select id="pd${k}" data-f="diet">${DIETS.map(x => `<option${x === p.diet ? " selected" : ""}>${x}</option>`).join("")}</select></label>
+      <label>獸醫告知過、需要留意的狀況（選填）<input id="pc${k}" data-f="note" value="${esc(p.note)}" maxlength="60" placeholder="例如：獸醫說要多注意喝水"></label>
+    </div>`).join("")}
+    ${o.pets.length < 6 ? `<button class="btn ghost" data-ob="add">＋ 再登記一隻</button>` : ""}
+    ${o.err ? `<p class="err">${esc(o.err)}</p>` : ""}
+    <div class="actions"><button class="btn" data-ob="next">下一步</button><button class="btn ghost" data-ob="back">上一步</button></div></div>`;
+  if (o.step === 2) {
+    const ok = CONSENTS.every(([id, req]) => !req || o.consent[id]);
+    return `<div class="ob">${obSteps(2)}<h2>個資與影像使用</h2>
+    <p class="lead">請閱讀並勾選。標示「必要」的項目都同意後才能開始使用。</p>
+    ${CONSENTS.map(([id, req, t, sub]) => `<label class="check"><input type="checkbox" id="${id}" data-c="${id}"${o.consent[id] ? " checked" : ""}>
+      <span>${t}${sub ? `<small>${sub}</small>` : ""}${req ? ` <span class="req">必要</span>` : ""}</span></label>`).join("")}
+    <details class="notice"><summary>閱讀完整的個資告知事項</summary><ol>
+      <li>蒐集目的：提供寵物行為紀錄、提醒與就醫觀察紀錄。</li>
+      <li>資料類別：飼主聯絡資料、寵物基本資料、由影像計算出的行為統計。原始影像不上傳。</li>
+      <li>利用期間與地區：使用服務期間；刪除帳號後依法定期限刪除。</li>
+      <li>你的權利：查詢、閱覽、複製、補充更正、停止處理與刪除。</li>
+      <li>不提供的影響：未同意必要項目時，無法使用本服務。</li></ol>
+      <p style="margin:8px 0 0;color:var(--muted)">※ 示範用草稿，正式版本需經個資法專業人士審閱。</p></details>
+    <div class="actions"><button class="btn" data-ob="next"${ok ? "" : " disabled"}>同意並繼續</button><button class="btn ghost" data-ob="back">上一步</button></div></div>`;
+  }
+  if (o.step === 3) return `<div class="ob">${obSteps(3)}<h2>開始前，建議先做一次健康檢查</h2>
+    <p class="lead">系統會用接下來 14 天學習「牠的平常」，之後都和這個起點比較。如果起點本身就有狀況，系統會把它當成平常，看不出來。</p>
+    <div class="form"><b>為什麼要先檢查？</b><span>個體化比較擅長抓「變化」，但抓不到「一開始就不對」。先請獸醫確認，起點才可靠。</span></div>
+    <label class="check"><input type="checkbox" id="vetDone" data-vet${o.vet ? " checked" : ""}><span>最近 6 個月內已做過健康檢查<small>選填，只是提醒用。</small></span></label>
+    <div class="actions"><button class="btn" data-ob="next">下一步</button><button class="btn ghost" data-ob="back">上一步</button></div></div>`;
+  return `<div class="ob">${obSteps(4)}<h2>設定完成！</h2>
+    <p class="lead">接下來 14 天，系統只記錄、不提醒，學習每隻毛孩的作息。</p>
+    <div class="form"><b>已登記</b>${o.pets.map(p => `<span>${p.species === "cat" ? "🐱" : "🐶"} ${esc(p.name)}${p.age ? `・${esc(p.age)} 歲` : ""}${p.weight ? `・${esc(p.weight)} 公斤` : ""}・${esc(p.diet)}</span>`).join("")}</div>
+    ${o.vet ? "" : `<p class="ctx">記得找時間帶毛孩做健康檢查，讓「平常」的起點更可靠。</p>`}
+    <p class="ctx">這是示範版：進入 App 後，畫面使用三隻示範寵物的模擬資料，不是你剛登記的寵物。</p>
+    <div class="actions"><button class="btn" data-ob="finish">進入 App</button></div></div>`;
+}
+function settings() {
+  const s = setup;
+  return `<h3>設定</h3>
+    ${s ? `<div class="form"><b>你登記的寵物（只存在這個瀏覽器）</b>${s.pets.map(p => `<span>${p.species === "cat" ? "🐱" : "🐶"} ${esc(p.name)}・${esc(p.diet)}${p.note ? `・${esc(p.note)}` : ""}</span>`).join("")}</div>`
+        : `<p class="empty">還沒有完成新手設定。</p>`}
+    <div class="form"><b>生活事件</b><span>${userEvents.length ? userEvents.map(e => `${md(e.d)} ${esc(petById(e.pet).name)}：${esc(e.type)}`).join("<br>") : "還沒有記錄。可以在「今日」的寵物卡片上新增。"}</span></div>
+    <div class="actions"><button class="btn" data-ob="restart">重新體驗新手流程</button><button class="btn ghost" data-wipe>刪除這個瀏覽器裡的設定</button></div>
+    ${st.wiped ? `<p class="ctx">已刪除。</p>` : ""}
+    <button class="btn ghost" data-close>回到 App</button>`;
+}
+const VIEWS = { today, trends, alerts, record, prefs: settings };
 function render() {
+  const inOb = !!st.ob;
+  $("#topbar").hidden = inOb; document.querySelector(".tabs").hidden = inOb;
+  if (inOb) { $("#view").innerHTML = onboarding(); return; }
   const d = dates[st.i], day = st.i + 1;
   $("#dateLabel").textContent = `${d}（${wk(d)}）`;
   $("#dateSub").textContent = day <= 14 ? `第 ${day} 天・建立基線中` : `第 ${day} 天`;
@@ -224,11 +370,54 @@ $("#scrub").addEventListener("input", e => { st.i = +e.target.value; render(); }
 $("#prev").addEventListener("click", () => { if (st.i > 0) { st.i--; render(); } });
 $("#next").addEventListener("click", () => { if (st.i < dates.length - 1) { st.i++; render(); } });
 document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) go(b.dataset.tab); });
+function readPets() {
+  document.querySelectorAll(".form[data-idx]").forEach(f => {
+    const p = st.ob.pets[+f.dataset.idx];
+    f.querySelectorAll("[data-f]").forEach(inp => { p[inp.dataset.f] = inp.value.trim(); });
+  });
+}
+function obAction(a) {
+  const o = st.ob;
+  if (a === "skip") { st.ob = null; render(); return; }
+  if (a === "restart") { st.ob = { step: 0, pets: [blankPet()], consent: {}, vet: false }; render(); return; }
+  if (o && o.step === 1) readPets();
+  if (a === "add") { o.pets.push(blankPet()); render(); return; }
+  if (a === "back") { o.step = Math.max(0, o.step - 1); o.err = ""; render(); return; }
+  if (a === "next") {
+    if (o.step === 1 && o.pets.some(p => !p.name)) { o.err = "每隻毛孩都需要名字。"; render(); return; }
+    o.err = ""; o.step++; render(); window.scrollTo(0, 0); return;
+  }
+  if (a === "finish") {
+    setup = { pets: o.pets, consent: o.consent, vet: o.vet, at: new Date().toISOString() };
+    store.set("setup", setup); st.ob = null; render();
+  }
+}
 $("#view").addEventListener("click", e => {
+  const ob = e.target.closest("[data-ob]"); if (ob) { obAction(ob.dataset.ob); return; }
+  const rm = e.target.closest("[data-rm]"); if (rm) { readPets(); st.ob.pets.splice(+rm.dataset.rm, 1); render(); return; }
+  const sp = e.target.closest("[data-sp]");
+  if (sp) { readPets(); st.ob.pets[+sp.closest(".form").dataset.idx].species = sp.dataset.sp; render(); return; }
+  const life = e.target.closest("[data-life]"); if (life) { st.lifeFor = life.dataset.life; render(); return; }
+  if (e.target.closest("[data-lifecancel]")) { st.lifeFor = null; render(); return; }
+  if (e.target.closest("[data-wipe]")) { store.clear(); setup = null; userEvents = []; st.wiped = true; render(); return; }
+  if (e.target.closest("[data-close]")) { st.wiped = false; go("today"); return; }
   const g = e.target.closest("[data-goto]"); if (g) { st.pet = g.dataset.goto; go("trends"); return; }
-  const c = e.target.closest("[data-pet]"); if (c) { st.pet = c.dataset.pet; render(); }
+  const c = e.target.closest("[data-pet]"); if (c && !c.closest("form")) { st.pet = c.dataset.pet; render(); }
 });
+$("#view").addEventListener("change", e => {
+  if (e.target.dataset.c) { st.ob.consent[e.target.dataset.c] = e.target.checked; render(); }
+  if (e.target.hasAttribute("data-vet")) { st.ob.vet = e.target.checked; }
+});
+$("#view").addEventListener("submit", e => {
+  if (e.target.id !== "lifeForm") return;
+  e.preventDefault();
+  const d = $("#lifeDate").value || dates[st.i];
+  userEvents.push({ pet: e.target.dataset.pet, d, type: $("#lifeType").value });
+  store.set("events", userEvents); st.lifeFor = null; render();
+});
+$("#settingsBtn").addEventListener("click", () => go("prefs"));
 function fromHash() { const h = location.hash.slice(1); if (VIEWS[h]) st.tab = h; render(); }
 window.addEventListener("hashchange", fromHash);
+if (!setup && !location.hash) st.ob = { step: 0, pets: [blankPet()], consent: {}, vet: false };
 fromHash();
 </script>
